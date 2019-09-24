@@ -38,14 +38,14 @@ class Discount():
     def __init__(self, basket):
         self.basket = basket
 
-    def many_of_a_type_discount(self, products):
+    def calculate_many_of_a_type_discount(self, products):
         discount = 0
         for item in self.basket:
             if item.name in products.keys():
                 discount += int(self.basket[item]/products[item.name]) * item.price
         return discount
 
-    def percentage_discount(self, products):
+    def calculate_percentage_discount(self, products):
         discount = 0
         for item in self.basket:
             if item.name in products.keys():
@@ -78,13 +78,11 @@ class CostCalculation():
             subtotal += (item.price * self.basket[item])
         return subtotal
 
-    def calculate_total_discount(self, users_discount, many_of_type_disc, percentage_disc):
-        discount = users_discount.many_of_a_type_discount(many_of_type_disc) + users_discount.percentage_discount(percentage_disc)
-        return discount
+    def calculate_total_discount(self, discount, many_of_type_disc, percentage_disc):
+        return discount.calculate_many_of_a_type_discount(many_of_type_disc) + discount.calculate_percentage_discount(percentage_disc)
 
-    def calculate_total(self, users_discount, many_of_type_disc, percentage_disc):
-        total = self.calculate_subtotal() - self.calculate_total_discount(users_discount, many_of_type_disc, percentage_disc)
-        return total
+    def calculate_total(self, discount, many_of_type_disc, percentage_disc):
+        return self.calculate_subtotal() - self.calculate_total_discount(discount, many_of_type_disc, percentage_disc)
 
 # define Python user-defined exceptions
 class Error(Exception):
