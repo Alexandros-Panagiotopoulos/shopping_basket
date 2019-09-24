@@ -1,32 +1,45 @@
-from shopping_basket_classes import Item, UsersBasket, UsersDiscount
+from shopping_basket_classes import Item, Basket, Discount, CostCalculation, ItemOutOfStockException
 
+#Store's items
 baked_beans = Item("Baked Beans", 0.99)
 biscuits  = Item("Biscuits", 1.20)
+# biscuits.set_out_of_stock()
 sardines  = Item("Sardines", 1.89)
 shampoo_small  = Item("Shampoo (Small)", 2.00)
 shampoo_medium = Item("Shampoo (Medium)", 2.50)
 shampoo_large = Item("Shampoo (Large)", 3.50)
 
-# users_basket = UsersBasket("Basket 1")
-# users_basket.add_items(baked_beans, 4)
-# users_basket.add_items(biscuits, 1)
-# subtotal = users_basket.calculate_subtotal()
+#Products with discount
+many_of_type_disc = {"Baked Beans" : 3}
+percentage_disc = {"Sardines" : 0.25}
 
-# users_basket = UsersBasket("Basket 2")
-# users_basket.add_items(baked_beans, 2)
-# users_basket.add_items(biscuits, 1)
-# users_basket.add_items(sardines, 2)
-# subtotal = users_basket.calculate_subtotal()
+#Basket chosen by client
+basket = Basket()
+try:
+    basket.add_items(baked_beans, 4)
+except ItemOutOfStockException:
+    print('Sorry, the item is currently out of stock')
 
-users_basket = UsersBasket("Basket 3")
-users_basket.add_items(shampoo_large, 3)
-users_basket.add_items(shampoo_medium, 1)
-users_basket.add_items(shampoo_small, 2)
+try:
+    basket.add_items(biscuits, 1)
+except ItemOutOfStockException:
+    print('Sorry, the item is currently out of stock')
 
-subtotal = users_basket.calculate_subtotal()
-users_discount = UsersDiscount(users_basket.basket)
+# basket = Basket()
+# basket.add_items(baked_beans, 2)
+# basket.add_items(biscuits, 1)
+# basket.add_items(sardines, 2)
 
-discount = users_discount.calculate_total_discount(baked_beans, sardines, shampoo_large, shampoo_medium, shampoo_small)
-total = users_discount.calculate_total(users_basket, baked_beans, sardines, shampoo_large, shampoo_medium, shampoo_small)
+# basket = Basket()
+# basket.add_items(shampoo_large, 3)
+# basket.add_items(shampoo_medium, 1)
+# basket.add_items(shampoo_small, 2)
+
+users_discount = Discount(basket.basket)
+users_cost = CostCalculation(basket.basket)
+
+subtotal = users_cost.calculate_subtotal()
+discount = users_cost.calculate_total_discount(users_discount, many_of_type_disc, percentage_disc)
+total = users_cost.calculate_total(users_discount, many_of_type_disc, percentage_disc)
 
 print (subtotal, discount, total)
