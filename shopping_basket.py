@@ -1,4 +1,4 @@
-from shopping_basket_classes import Item, Basket, Discount, CostCalculation, ItemOutOfStockException
+from shopping_basket_classes import Item, Basket, Discount, BasketCostCalculator, ItemOutOfStockException
 
 #Store's items
 baked_beans = Item("Baked Beans", 0.99)
@@ -35,11 +35,11 @@ except ItemOutOfStockException:
 # basket.add_items(shampoo_medium, 1)
 # basket.add_items(shampoo_small, 2)
 
-users_discount = Discount(basket.basket)
-users_cost = CostCalculation(basket.basket)
+users_discount = Discount(basket.items)
+cost = BasketCostCalculator(basket)
 
-subtotal = users_cost.calculate_subtotal()
-discount = users_cost.calculate_total_discount(users_discount, many_of_type_disc, percentage_disc)
-total = users_cost.calculate_total(users_discount, many_of_type_disc, percentage_disc)
+subtotal = cost.calculate_subtotal()
+discount = cost.calculate_total_discount(users_discount, many_of_type_disc, percentage_disc)
+total = cost.calculate_total(users_discount, many_of_type_disc, percentage_disc)
 
 print (subtotal, discount, total)

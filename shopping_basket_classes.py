@@ -1,6 +1,9 @@
 class Item():
     """A class to store all the store's items with their prices (available and unavailable)"""
 
+# we can use an id
+# the class should validate that the object can be instantiated (by raising exceptions if the constraints are not met, e.g. price > 0)
+# we can also use type hints
     def __init__(self, name, price):
         self.name = name
         self.price = price
@@ -20,36 +23,36 @@ class Basket():
     """A class with the items in the basket"""
 
     def __init__(self):
-        self.basket = {}
+        self.items = {}
 
     def add_items(self, item, quantity):
         if item.available == True:
-            if item in self.basket.keys():
-                self.basket[item] += quantity
+            if item in self.items.keys():
+                self.items[item] += quantity
             else:
-                self.basket[item] = quantity
+                self.items[item] = quantity
         else:
             raise ItemOutOfStockException()
 
 
 class Discount():
-    """A class to calculate the discount of items for the current basket"""
+    """A class to calculate the discount of some items"""
 
-    def __init__(self, basket):
-        self.basket = basket
+    def __init__(self, items):
+        self.items = items
 
     def calculate_many_of_a_type_discount(self, products):
         discount = 0
-        for item in self.basket:
+        for item in self.items:
             if item.name in products.keys():
-                discount += int(self.basket[item]/products[item.name]) * item.price
+                discount += int(self.items[item]/products[item.name]) * item.price
         return discount
 
     def calculate_percentage_discount(self, products):
         discount = 0
-        for item in self.basket:
+        for item in self.items:
             if item.name in products.keys():
-                discount += self.basket[item] * item.price * products[item.name]
+                discount += self.items[item] * item.price * products[item.name]
         return discount
 
     # def shampoo_discount(self, shampoo_large, shampoo_medium, shampoo_small): #it is considered the smaller the shampoo the lower the price
@@ -66,7 +69,7 @@ class Discount():
     #     return discount
 
 
-class CostCalculation():
+class BasketCostCalculator():
     """A class to calculate the subtotal, discount and total cost"""
 
     def __init__(self, basket):
@@ -74,12 +77,12 @@ class CostCalculation():
 
     def calculate_subtotal(self):
         subtotal = 0
-        for item in self.basket:
-            subtotal += (item.price * self.basket[item])
+        for item in self.basket.items:
+            subtotal += (item.price * self.basket.items[item])
         return subtotal
 
     def calculate_total_discount(self, discount, many_of_type_disc, percentage_disc):
-        return discount.calculate_many_of_a_type_discount(many_of_type_disc) + discount.calculate_percentage_discount(percentage_disc)
+        return (discount.calculate_many_of_a_type_discount(many_of_type_disc) + discount.calculate_percentage_discount(percentage_disc))
 
     def calculate_total(self, discount, many_of_type_disc, percentage_disc):
         return self.calculate_subtotal() - self.calculate_total_discount(discount, many_of_type_disc, percentage_disc)
