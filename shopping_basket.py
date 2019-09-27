@@ -14,21 +14,16 @@ percentage_offer = {"Sardines" : 0.25}
 cheapest_item_offer = [["Shampoo (Small)", "Shampoo (Medium)", "Shampoo (Large)"]]
 
 #Basket chosen by client
-# basket = Basket()
-# try:
-#     basket.add_items(baked_beans, 4)
-# except ItemOutOfStockException:
-#     print('Sorry, the item is currently out of stock')
-
-# try:
-#     basket.add_items(biscuits, 1)
-# except ItemOutOfStockException:
-#     print('Sorry, the item is currently out of stock')
-
 basket = Basket()
-basket.add_items(shampoo_large, 3)
-basket.add_items(shampoo_medium, 1)
-basket.add_items(shampoo_small, 2)
+try:
+    basket.add_items(baked_beans, 4)
+except ItemOutOfStockException:
+    print('Sorry, the item is currently out of stock')
+
+try:
+    basket.add_items(biscuits, 1)
+except ItemOutOfStockException:
+    print('Sorry, the item is currently out of stock')
 
 users_offer = Offer(basket.items)
 cost = BasketCostCalculator(basket)

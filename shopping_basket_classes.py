@@ -61,13 +61,12 @@ class Offer():
         """Offer in which for specific grouped products the cheapest out of three is free"""
         grouped_items = self.manipulate_grouped_products(grouped_products)
         offer = 0
-        item_list = []
         for item_group in grouped_items:
+            item_list = []
             for item in item_group:
                 item_list.extend(self.items[item] * [item])
             for i in range(2, len(item_list), 3):
                 offer += item_list[i].price
-            item_list = []
         return offer
 
     def manipulate_grouped_products(self, grouped_products):
