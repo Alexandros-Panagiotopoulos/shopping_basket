@@ -4,42 +4,45 @@ from shopping_basket_classes import Item, Basket, Offer, BasketCostCalculator, N
 class TestItem(unittest.TestCase):
     """Test for the class Item"""
 
-    def test_creat_baked_beans(self):
-        price = 0.99
+    def test_can_create_item_with_positive_price(self):
+        price = 0.01
         baked_beans = Item("Baked Beans", price)
 
-        self.assertEqual(baked_beans.name, "Baked Beans")
-        self.assertEqual(baked_beans.price, price)
+        self.assertIsInstance(baked_beans, Item)
 
-    def test_negative_price_exception(self):
-        price = -0.99
+    def test_cannot_create_item_with_negative_price(self):
+        price = -0.01
 
-        with self.assertRaises(NegativePriceDetectedException) as context:
+        with self.assertRaises(NegativePriceDetectedException) as error:
             Item("Baked Beans", price)
+        self.assertEqual('the price of the item should be a positive number', str(error.exception))
 
-        self.assertEqual('the price of the item should be a positive number', str(context.exception))
+    def test_cannot_create_item_with_zero_price(self):
+        price = 0
+
+        with self.assertRaises(NegativePriceDetectedException) as error:
+            Item("Baked Beans", price)
+        self.assertEqual('the price of the item should be a positive number', str(error.exception))
 
 class TestBasket(unittest.TestCase):
-    """Test for the calss Basket"""
+    """Test for the class Basket"""
 
-    def test_insert_baked_beans_into_empty_basket(self):
+    def test_can_insert_items_into_empty_basket(self):
         baked_beans = Item("Baked Beans", 0.99)
         basket = Basket()
-        quantity = 4
-        basket.add_items(baked_beans, quantity)
+        basket.add_items(baked_beans, 4)
 
-        self.assertEqual(basket.items,{baked_beans: quantity})
+        self.assertEqual(basket.items,{baked_beans: 4})
 
-    def test_add_more_baked_beans_into_basket(self):
+    def test_can_add_items_of_the_same_type_into_basket(self):
         baked_beans = Item("Baked Beans", 0.99)
         basket = Basket()
-        quantity = 4
-        basket.add_items(baked_beans, quantity)
+        basket.add_items(baked_beans, 4)
         basket.add_items(baked_beans, 1)
 
-        self.assertEqual(basket.items,{baked_beans: quantity+1})
+        self.assertEqual(basket.items,{baked_beans: 5})
 
-    def test_insert_unavailable_baked_beans_into_basket(self):
+    def test_cannot_add_unavailable_items_into_basket(self):
         baked_beans = Item("Baked Beans", 0.99)
         baked_beans.set_out_of_stock()
         basket = Basket()
@@ -63,28 +66,28 @@ class TestOffer(unittest.TestCase):
 
     def test_calculate_three_baked_beans_offer(self):
         self.basket.add_items(self.baked_beans, 4)
-        many_of_type_offer = {"Baked Beans" : 3, "Biscuits": 5} #Offer for free a baked bean out of 3 and a biscuit out of 5
+        many_of_type_offer = {"Baked Beans" : 3, "Biscuits": 5} #Offer a baked bean for every 3 and a biscuit for every 5
         users_offer = Offer(self.basket.items)
-        offer = users_offer.calculate_many_of_a_type_offer(many_of_type_offer)
+        discount_amount = users_offer.calculate_many_of_a_type_offer(many_of_type_offer)
 
-        self.assertEqual(offer, 0.99)
+        self.assertEqual(discount_amount, 0.99)
 
     def test_calculate_baked_beans_and_biscuit_offer(self):
         self.basket.add_items(self.baked_beans, 4)
         self.basket.add_items(self.biscuits, 22)
         many_of_type_offer = {"Baked Beans" : 3, "Biscuits": 5}
         users_offer = Offer(self.basket.items)
-        offer = users_offer.calculate_many_of_a_type_offer(many_of_type_offer)
+        discount_amount = users_offer.calculate_many_of_a_type_offer(many_of_type_offer)
 
-        self.assertEqual(offer, 5.79)
+        self.assertEqual(discount_amount, 5.79) #(Biscuit: 22%5 = 4, 4*1.20 = 4.80) (4%3 = 1, 1*0.99 = 0.99)
 
     def test_calculate_sardines_percentage_offer(self):
         self.basket.add_items(self.sardines, 4)
         percentage_offer = {"Sardines" : 0.25}
         users_offer = Offer(self.basket.items)
-        offer = users_offer.calculate_percentage_offer(percentage_offer)
+        discount_amount = users_offer.calculate_percentage_offer(percentage_offer)
 
-        self.assertEqual(offer, 1.89)
+        self.assertEqual(discount_amount, 1.89) #(0.25*1.89)*4
 
     def test_calculate_cheapest_item_offer(self):
         self.basket.add_items(self.shampoo_large, 3)
@@ -92,9 +95,9 @@ class TestOffer(unittest.TestCase):
         self.basket.add_items(self.shampoo_small, 2)
         cheapest_item_offer = [["Shampoo (Small)", "Shampoo (Medium)", "Shampoo (Large)"], ["Sardines", "Biscuits"]]
         users_offer = Offer(self.basket.items)
-        offer = users_offer.calculate_cheapest_item_offer(cheapest_item_offer)
+        discount_amount = users_offer.calculate_cheapest_item_offer(cheapest_item_offer)
 
-        self.assertEqual(offer, 5.5)
+        self.assertEqual(discount_amount, 5.5)
 
     def test_calculate_cheapest_item_offer_for_two_groups(self):
         self.basket.add_items(self.shampoo_large, 3)
@@ -104,9 +107,9 @@ class TestOffer(unittest.TestCase):
         self.basket.add_items(self.biscuits, 3)
         cheapest_item_offer = [["Shampoo (Small)", "Shampoo (Medium)", "Shampoo (Large)"], ["Sardines", "Biscuits"]]
         users_offer = Offer(self.basket.items)
-        offer = users_offer.calculate_cheapest_item_offer(cheapest_item_offer)
+        discount_amount = users_offer.calculate_cheapest_item_offer(cheapest_item_offer)
 
-        self.assertEqual(offer, 8.59)
+        self.assertEqual(discount_amount, 8.59)
 
 
 class TestBasketCostCalculator(unittest.TestCase):
