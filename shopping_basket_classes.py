@@ -2,11 +2,13 @@ class Item():
     """A class to store all the store's items with their prices (available and unavailable)"""
 
 # we can use an id
-# the class should validate that the object can be instantiated (by raising exceptions if the constraints are not met, e.g. price > 0)
+# the class should validate that the object can be instantiated (by raising exceptions if the constraints are not met, e.g. name must be a string)
 # we can also use type hints
     def __init__(self, name, price):
         self.name = name
         self.price = price
+        if not price > 0:
+            raise NegativePriceDetectedException('the price of the item should be a positive number')
         self.available = True
 
     def change_price(self, new_price):
@@ -35,38 +37,54 @@ class Basket():
             raise ItemOutOfStockException()
 
 
-class Discount():
-    """A class to calculate the discount of some items"""
+class Offer():
+    """A class to calculate the offers of some items"""
 
     def __init__(self, items):
         self.items = items
 
-    def calculate_many_of_a_type_discount(self, products):
-        discount = 0
+    def calculate_many_of_a_type_offer(self, products):
+        offer = 0
         for item in self.items:
             if item.name in products.keys():
-                discount += int(self.items[item]/products[item.name]) * item.price
-        return discount
+                offer += int(self.items[item]/products[item.name]) * item.price
+        return offer
 
-    def calculate_percentage_discount(self, products):
-        discount = 0
+    def calculate_percentage_offer(self, products):
+        offer = 0
         for item in self.items:
             if item.name in products.keys():
-                discount += self.items[item] * item.price * products[item.name]
-        return discount
+                offer += self.items[item] * item.price * products[item.name]
+        return offer
 
-    # def shampoo_discount(self, shampoo_large, shampoo_medium, shampoo_small): #it is considered the smaller the shampoo the lower the price
-    #     discount = 0
-    #     shampoo_list = []
-    #     if shampoo_large in self.basket.keys():
-    #         shampoo_list.extend(self.basket[shampoo_large] * [shampoo_large])
-    #     if shampoo_medium in self.basket.keys():
-    #         shampoo_list.extend(self.basket[shampoo_medium] * [shampoo_medium])
-    #     if shampoo_small in self.basket.keys():
-    #         shampoo_list.extend(self.basket[shampoo_small] * [shampoo_small])
-    #     for i in range(2, len(shampoo_list), 3):
-    #         discount += shampoo_list[i].price
-    #     return discount
+    def calculate_cheapest_item_offer(self, grouped_products):
+        """Offer in which for specific grouped products the cheapest out of three is free"""
+        grouped_items = self.manipulate_grouped_products(grouped_products)
+        offer = 0
+        item_list = []
+        for item_group in grouped_items:
+            for item in item_group:
+                item_list.extend(self.items[item] * [item])
+            for i in range(2, len(item_list), 3):
+                offer += item_list[i].price
+            item_list = []
+        return offer
+
+    def manipulate_grouped_products(self, grouped_products):
+        """receives a list of lists with product names and returns a list of lists with item type objects 
+        that are included in the basket shorted by price to feed the calculate_cheapest_item_offer method"""
+        grouped_items = []
+        for product_group in grouped_products:
+            item_group = []
+            for product in product_group:
+                for item in self.items.keys():
+                    if item.name == product:
+                        item_group.append(item)
+                        break
+            if item_group:
+                item_group = sorted(item_group, key=lambda x: x.price, reverse=True)
+                grouped_items.append(item_group)      
+        return grouped_items
 
 
 class BasketCostCalculator():
@@ -79,13 +97,18 @@ class BasketCostCalculator():
         subtotal = 0
         for item in self.basket.items:
             subtotal += (item.price * self.basket.items[item])
+        subtotal = round(subtotal,3)
         return subtotal
 
-    def calculate_total_discount(self, discount, many_of_type_disc, percentage_disc):
-        return (discount.calculate_many_of_a_type_discount(many_of_type_disc) + discount.calculate_percentage_discount(percentage_disc))
+    def calculate_total_discount(self, offer, many_of_type_offer, percentage_offer, grouped_products):
+        discount = (offer.calculate_many_of_a_type_offer(many_of_type_offer) + 
+                    offer.calculate_percentage_offer(percentage_offer)+
+                    offer.calculate_cheapest_item_offer(grouped_products))
+        return round(discount,3)
 
-    def calculate_total(self, discount, many_of_type_disc, percentage_disc):
-        return self.calculate_subtotal() - self.calculate_total_discount(discount, many_of_type_disc, percentage_disc)
+    def calculate_total(self, offer, many_of_type_offer, percentage_offer, grouped_products):
+        total = self.calculate_subtotal() - self.calculate_total_discount(offer, many_of_type_offer, percentage_offer, grouped_products)
+        return round(total,2)
 
 # define Python user-defined exceptions
 class Error(Exception):
@@ -94,4 +117,8 @@ class Error(Exception):
 
 class ItemOutOfStockException(Error):
    """Raised when the item is out of stock"""
+   pass
+
+class NegativePriceDetectedException(Error):
+   """Raised when the price of an item is not positive"""
    pass
