@@ -2,8 +2,6 @@ class Item():
     """A class to store all the store's items with their prices (available and unavailable)"""
 
 # we can use an id
-# the class should validate that the object can be instantiated (by raising exceptions if the constraints are not met, e.g. name must be a string)
-# we can also use type hints
     def __init__(self, name, price):
         self.name = name
         self.price = price
@@ -108,6 +106,34 @@ class BasketCostCalculator():
     def calculate_total(self, offer, many_of_type_offer, percentage_offer, grouped_products):
         total = self.calculate_subtotal() - self.calculate_total_discount(offer, many_of_type_offer, percentage_offer, grouped_products)
         return round(total,2)
+
+
+class CatalogueRepository():
+    """A class responsible for fetching catalogue data.
+       If the data belongs to our team then the data can be retrieved by accessing the Database.
+       If the data is managed by another team then we can fetch them from a (hopefully) RESTful API that they'll expose.
+    """
+
+    def __init__(self):
+        pass
+
+    def get_items(self):
+        #returns a list of all the items
+        #hardcoding for the sake of this test
+        catalogue = {
+            "baked_beans": Item("Baked Beans", 0.99),
+            "biscuits": Item("Biscuits", 1.20),
+            "sardines": Item("Sardines", 1.89),
+            "shampoo_small": Item("Shampoo (Small)", 2.00),
+            "shampoo_medium": Item("Shampoo (Medium)", 2.50),
+            "shampoo_large": Item("Shampoo (Large)", 3.50)
+        }
+        return catalogue
+
+    def get_item_by_name(self, name):
+        items = self.get_items()
+        return items[name]
+
 
 # define Python user-defined exceptions
 class Error(Exception):
