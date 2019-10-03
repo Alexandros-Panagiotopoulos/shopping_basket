@@ -1,5 +1,5 @@
 import unittest
-from shopping_basket_classes import Item, Basket, Offer, BasketCostCalculator, NegativePriceDetectedException,ItemOutOfStockException
+from shopping_basket_classes import Item, Basket, Offer, CatalogueRepository, BasketCostCalculator, NegativePriceDetectedException,ItemOutOfStockException
 
 class TestItem(unittest.TestCase):
     """Test for the class Item"""
@@ -63,10 +63,11 @@ class TestOffer(unittest.TestCase):
         self.shampoo_medium = Item("Shampoo (Medium)", 2.50)
         self.shampoo_large = Item("Shampoo (Large)", 3.50)
         self.basket = Basket()
+        self.catalogue = CatalogueRepository()
 
     def test_calculate_three_baked_beans_offer(self):
         self.basket.add_items(self.baked_beans, 4)
-        many_of_type_offer = {"Baked Beans" : 3, "Biscuits": 5} #Offer a baked bean for every 3 and a biscuit for every 5
+        many_of_type_offer = self.catalogue.get_many_of_type_offer_products()
         users_offer = Offer(self.basket.items)
         discount_amount = users_offer.calculate_many_of_a_type_offer(many_of_type_offer)
 
@@ -75,7 +76,7 @@ class TestOffer(unittest.TestCase):
     def test_calculate_baked_beans_and_biscuit_offer(self):
         self.basket.add_items(self.baked_beans, 4)
         self.basket.add_items(self.biscuits, 22)
-        many_of_type_offer = {"Baked Beans" : 3, "Biscuits": 5}
+        many_of_type_offer = {"Baked Beans" : 3, "Biscuits": 5} #Offer a baked bean for every 3 and a biscuit for every 5
         users_offer = Offer(self.basket.items)
         discount_amount = users_offer.calculate_many_of_a_type_offer(many_of_type_offer)
 
@@ -83,7 +84,7 @@ class TestOffer(unittest.TestCase):
 
     def test_calculate_sardines_percentage_offer(self):
         self.basket.add_items(self.sardines, 4)
-        percentage_offer = {"Sardines" : 0.25}
+        percentage_offer = self.catalogue.get_percentage_offer_products()
         users_offer = Offer(self.basket.items)
         discount_amount = users_offer.calculate_percentage_offer(percentage_offer)
 
@@ -93,7 +94,7 @@ class TestOffer(unittest.TestCase):
         self.basket.add_items(self.shampoo_large, 3)
         self.basket.add_items(self.shampoo_medium, 1)
         self.basket.add_items(self.shampoo_small, 2)
-        cheapest_item_offer = [["Shampoo (Small)", "Shampoo (Medium)", "Shampoo (Large)"], ["Sardines", "Biscuits"]]
+        cheapest_item_offer = self.catalogue.get_cheapest_product_offer_products()
         users_offer = Offer(self.basket.items)
         discount_amount = users_offer.calculate_cheapest_item_offer(cheapest_item_offer)
 

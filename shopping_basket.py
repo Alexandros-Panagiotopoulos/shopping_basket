@@ -1,20 +1,22 @@
 from shopping_basket_classes import Item, Basket, Offer, BasketCostCalculator, ItemOutOfStockException, CatalogueRepository
 
-#Products with discount
-many_of_type_offer = {"Baked Beans" : 3}
-percentage_offer = {"Sardines" : 0.25}
-cheapest_item_offer = [["Shampoo (Small)", "Shampoo (Medium)", "Shampoo (Large)"]]
 catalogue = CatalogueRepository()
+catalogue.get_items()
+
+#Products with discount
+many_of_type_offer = catalogue.get_many_of_type_offer_products()
+percentage_offer = catalogue.get_percentage_offer_products()
+cheapest_item_offer = catalogue.get_cheapest_product_offer_products()
 
 #Basket chosen by client
 basket = Basket()
 try:
-    basket.add_items(catalogue.get_item_by_name("baked_beans"), 4)
+    basket.add_items(catalogue.items_by_name["Baked Beans"], 4)
 except ItemOutOfStockException:
     print('Sorry, the item is currently out of stock')
 
 try:
-    basket.add_items(catalogue.get_item_by_name("biscuits"), 1)
+    basket.add_items(catalogue.items_by_name["Biscuits"], 1)
 except ItemOutOfStockException:
     print('Sorry, the item is currently out of stock')
 
