@@ -162,7 +162,8 @@ class CatalogueRepository():
 
     def get_cheapest_product_offer_products(self):
         self.cursor.execute("SELECT p.name, c.grouped_products_id \
-            FROM products AS p INNER JOIN cheapest_item_offer AS c ON p.id = c.item_id")
+            FROM products AS p INNER JOIN cheapest_item_offer AS c ON p.id = c.item_id\
+                ORDER BY c.grouped_products_id")
 
         products = self.cursor.fetchall()
 
