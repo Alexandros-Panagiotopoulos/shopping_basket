@@ -7,8 +7,8 @@ class Item():
     def __init__(self, name, price):
         self.name = name
         self.price = price
-        if not price > 0:
-            raise NegativePriceDetectedException('the price of the item should be a positive number')
+        if not price >= 0:
+            raise NegativePriceDetectedException('the price of the item should be a positive number.')
         self.available = True
 
     def change_price(self, new_price):
