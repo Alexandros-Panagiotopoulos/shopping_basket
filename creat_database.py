@@ -10,7 +10,7 @@ database = lines[3]
 
 mydb = mysql.connector.connect(
 host = host,
-user = user,
+user = [otinanai]user,
 passwd = passwd,
 database = database
 )
