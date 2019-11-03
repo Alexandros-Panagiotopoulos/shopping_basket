@@ -1,18 +1,21 @@
 import mysql.connector
+import ast
 
-with open ('c:/Users/alex/code/python/Shopping_basket/database_access.txt') as file_object:
-    lines = file_object.read().splitlines()
-
-host = lines[0]
-user = lines[1]
-passwd = lines[2]
-database = lines[3]
+with open ('database_access.txt', 'r') as file_object:
+    my_credits = ast.literal_eval(file_object.read())
 
 mydb = mysql.connector.connect(
+<<<<<<< HEAD
+host = my_credits['host'],
+user = my_credits['user'],
+passwd = my_credits['password'],
+database = my_credits['database']
+=======
 host = host,
 user = [otinanai]user,
 passwd = passwd,
 database = database
+>>>>>>> master
 )
 
 mycursor = mydb.cursor()

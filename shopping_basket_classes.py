@@ -117,7 +117,7 @@ class CatalogueRepository():
     """
 
     def __init__(self):
-        with open ('c:/Users/alex/code/python/Shopping_basket/database_access.txt') as file_object:
+        with open ('database_access.txt') as file_object:
             lines = file_object.read().splitlines()
 
         host = lines[0]
